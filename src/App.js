@@ -1,15 +1,18 @@
 import React from 'react';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import {createStructuredSelector} from 'reselect';
+
 import './App.css';
-import {Home} from './pages/homepage/homepage';
-import {Shop} from './pages/shoppage/shop';
-import {Signin} from './pages/sign-in/sign-in';
-import {Header} from './components/header/header';
-import{Switch,Route,Redirect} from 'react-router-dom';
+
+import HomePage from './pages/homepage/homepage';
+import ShopPage from './pages/shop/shop';
+import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up';
+import Header from './components/header/header';
 import { auth, createUserProfileDocument } from './firebase/firebase';
-import {connect} from 'react-redux';
-import {setCurrentUser} from './redux/user/user-action'
-
-
+import { setCurrentUser } from './redux/user/user-actions';
+import {selectCurrentUser} from './redux/user/user-selectors';
+import CheckoutPage from './pages/checkout/checkout'
 
 
 class App extends React.Component {
@@ -43,8 +46,9 @@ class App extends React.Component {
       <div>
         <Header />
         <Switch>
-          <Route exact path='/' component={Home} />
-          <Route path='/shop' component={Shop} />
+          <Route exact path='/' component={HomePage} />
+          <Route path='/shop' component={ShopPage} />
+          <Route exact path='/checkout' component={CheckoutPage} />
           <Route
             exact
             path='/signin'
@@ -52,7 +56,7 @@ class App extends React.Component {
               this.props.currentUser ? (
                 <Redirect to='/' />
               ) : (
-                <Signin/>
+                <SignInAndSignUpPage />
               )
             }
           />
@@ -62,8 +66,8 @@ class App extends React.Component {
   }
 }
 
-const mapStateToProps = ({user})=>({
-  currentUser: user.currentUser
+const mapStateToProps = createStructuredSelector({
+  currentUser: selectCurrentUser
 });
 
 const mapDispatchToProps = dispatch => ({
